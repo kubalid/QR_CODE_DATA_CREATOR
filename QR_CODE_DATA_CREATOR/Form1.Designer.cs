@@ -135,6 +135,7 @@
             dataGridViewSteps.Name = "dataGridViewSteps";
             dataGridViewSteps.Size = new Size(332, 226);
             dataGridViewSteps.TabIndex = 11;
+            dataGridViewSteps.CellClick += dataGridViewSteps_CellClick;
             // 
             // SaveBaseBTN
             // 
@@ -163,8 +164,6 @@
             Controls.Add(label1);
             Controls.Add(BaseY);
             Controls.Add(BaseX);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
-            MaximizeBox = false;
             Name = "Form1";
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)dataGridViewSteps).EndInit();

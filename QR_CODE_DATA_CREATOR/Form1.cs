@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ClosedXML.Excel;
-
-
+using System.IO;
+using System.ComponentModel;
 
 namespace QR_CODE_DATA_CREATOR
 {
@@ -13,7 +13,7 @@ namespace QR_CODE_DATA_CREATOR
         private int currentY = 0;
         private int stepCounter = 0;
         private string finalvalue = "";
-        private List<CoordinateStep> stepsHistory = new List<CoordinateStep>();
+        private BindingList<CoordinateStep> stepsHistory = new BindingList<CoordinateStep>();
 
         public Form1()
         {
@@ -32,8 +32,8 @@ namespace QR_CODE_DATA_CREATOR
         }
         private void RefreshGrid()
         {
-            dataGridViewSteps.DataSource = null;
-            dataGridViewSteps.DataSource = stepsHistory;
+            dataGridViewSteps.Refresh();
+
         }
 
 
@@ -91,26 +91,28 @@ namespace QR_CODE_DATA_CREATOR
                 MessageBox.Show("Brak danych do zapisu.", "Ostrze¿enie", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            
-            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel Workbook|*.xlsx" })
+
+            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "\"CSV file (*.csv)|*.csv| All Files (*.*)|*.*\";" })
             {
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        using (XLWorkbook workbook = new XLWorkbook())
+                        using (StreamWriter sw = new StreamWriter(sfd.FileName))
                         {
-                            var worksheet = workbook.Worksheets.Add("Historia wspó³rzêdnych");
+
                             for (int i = 0; i < stepsHistory.Count; i++)
                             {
                                 string X = stepsHistory[i].X.ToString();
                                 string Y = stepsHistory[i].Y.ToString();
                                 string finalvalue = X + Y;
-                                worksheet.Cell(i + 1, 1).Value = int.Parse(finalvalue);
-                            }
-                            worksheet.Columns().AdjustToContents();
 
-                            workbook.SaveAs(sfd.FileName);
+                                sw.WriteLine(int.Parse(finalvalue));
+
+                            }
+
+
+
                             MessageBox.Show("Zapisano pomyœlnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         }
@@ -123,6 +125,14 @@ namespace QR_CODE_DATA_CREATOR
                 }
             }
 
+        }
+
+        private void dataGridViewSteps_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1)
+            {
+                return;
+            }
         }
     }
 }
